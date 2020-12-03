@@ -19,11 +19,21 @@ using Piranha.Data.EF.SQLite;
 using Piranha.AspNetCore.Identity.SQLite;
 using Piranha.AttributeBuilder;
 using Piranha.Local;
+using Piranha.Data.EF.SQLServer;
+using Microsoft.Extensions.Configuration;
+using Piranha.AspNetCore.Identity.SQLServer;
 
 namespace RazorWeb
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; private set; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -41,10 +51,13 @@ namespace RazorWeb
                 options.UseTinyMCE();
                 options.UseMemoryCache();
 
-                options.UseEF<SQLiteDb>(db =>
-                    db.UseSqlite("Filename=./piranha.razorweb.db"));
-                options.UseIdentityWithSeed<IdentitySQLiteDb>(db =>
-                    db.UseSqlite("Filename=./piranha.razorweb.db"));
+                //options.UseEF<SQLiteDb>(db =>
+                //    db.UseSqlite("Filename=./piranha.razorweb.db"));
+                //options.UseIdentityWithSeed<IdentitySQLiteDb>(//db =>
+                //    db.UseSqlite("Filename=./piranha.razorweb.d//b"));
+                options.UseEF<SQLServerDb>(db => db.UseSqlServer(Configuration.GetConnectionString("piranha")));
+                options.UseIdentityWithSeed<IdentitySQLServerDb>(db =>
+                db.UseSqlServer(Configuration.GetConnectionString("piranha")));
 
                 options.UseSecurity(o =>
                 {
